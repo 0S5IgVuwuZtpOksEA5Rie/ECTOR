@@ -1,7 +1,10 @@
 use rand::{self, random};
 use std::{self, io::stdin};
 
-fn break_settings_string_to_array(settings_string: &str) -> (bool, u128, i128, i128, i128) {
+const STD_ALPHANUMERIC: &str = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+const SPECIAL_CHARACTERS: &str = "`~!@#$%^&*()_-+=[]\\{{}|;:',.<>/?\"";
+
+fn break_settings_string_to_tuple(settings_string: &str) -> (bool, u128, i128, i128, i128) {
     let settings_string_split: Vec<&str> = settings_string.split(";").collect();
 
     if settings_string_split.len() != 4 {
@@ -26,13 +29,16 @@ fn break_settings_string_to_array(settings_string: &str) -> (bool, u128, i128, i
 }
 
 fn generate_random_setting() -> (u128, i128, i128, i128) {
-    let key: u128 = random();
-    let key_scaler: i128 = random();
-    let iterator_scaler: i128 = random();
-    let position_scaler: i128 = random();
-
-    return (key, key_scaler, iterator_scaler, position_scaler);
+    // tuple structure:  (valid, key, key scaler, iterator scaler, position scaler)
+    return (
+        random::<u128>(),
+        random::<i128>(),
+        random::<i128>(),
+        random::<i128>(),
+    );
 }
+
+fn calculate_character_randomise(settings: (bool, u128, i128, i128, i128)) {}
 
 fn main() {
     println!("ECTOR (EnCrypTOR)");
@@ -73,15 +79,22 @@ fn main() {
                 let string_input_slice: &str = string_input.trim();
 
                 if string_input_slice == "r" {
-                    let tmp_1: (u128, i128, i128, i128) = generate_random_setting();
-                    settings = (true, tmp_1.0, tmp_1.1, tmp_1.2, tmp_1.3);
-                    println!("{:?}", tmp_1);
+                    let generated_random_setting: (u128, i128, i128, i128) =
+                        generate_random_setting();
+                    settings = (
+                        true,
+                        generated_random_setting.0,
+                        generated_random_setting.1,
+                        generated_random_setting.2,
+                        generated_random_setting.3,
+                    );
+                    println!("{:?}", generated_random_setting);
                     break;
                 } else {
-                    let tmp_1: (bool, u128, i128, i128, i128) =
-                        break_settings_string_to_array(&string_input_slice);
-                    if tmp_1.0 == true {
-                        settings = tmp_1;
+                    let user_input_setting: (bool, u128, i128, i128, i128) =
+                        break_settings_string_to_tuple(&string_input_slice);
+                    if user_input_setting.0 == true {
+                        settings = user_input_setting;
                         break;
                     }
                 }
