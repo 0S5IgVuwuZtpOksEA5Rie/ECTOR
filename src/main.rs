@@ -28,6 +28,27 @@ fn break_settings_string_to_tuple(settings_string: &str) -> (bool, u128, i128, i
     );
 }
 
+fn get_rerun_or_close() -> bool {
+    loop {
+        let mut string_input: String = String::new();
+        println!("do again (y/n)?");
+
+        stdin()
+            .read_line(&mut string_input)
+            .expect("input read fail");
+
+        let string_input_slice: &str = string_input.trim();
+
+        if string_input_slice == "y" {
+            return true;
+        } else if string_input_slice == "n" {
+            return false;
+        } else {
+            println!("invalid input")
+        }
+    }
+}
+
 fn generate_random_setting() -> (u128, i128, i128, i128) {
     // tuple structure:  (valid, key, key scaler, iterator scaler, position scaler)
     return (
@@ -102,25 +123,6 @@ fn main() {
         } else {
         }
 
-        // do again loop
-        loop {
-            println!("do again (y/n)?");
-            let mut string_input: String = String::new();
-
-            stdin()
-                .read_line(&mut string_input)
-                .expect("input read fail");
-
-            let string_input_slice: &str = string_input.trim();
-
-            if string_input_slice == "y" {
-                break;
-            } else if string_input_slice == "n" {
-                run = false;
-                break;
-            } else {
-                println!("invalid input")
-            }
-        }
+        run = get_rerun_or_close()
     }
 }
