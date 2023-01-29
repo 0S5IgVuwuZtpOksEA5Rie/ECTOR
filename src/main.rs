@@ -4,7 +4,7 @@ use std::{self, io::stdin};
 const STD_ALPHANUMERIC: &str = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 const SPECIAL_CHARACTERS: &str = "`~!@#$%^&*()_-+=[]\\{{}|;:',.<>/?\"";
 
-fn break_settings_string_to_tuple(settings_string: &str) -> (bool, u128, i128, i128, i128) {
+fn break_settings_string_to_tuple(settings_string: String) -> (bool, u128, i128, i128, i128) {
     let settings_string_split: Vec<&str> = settings_string.split(";").collect();
 
     if settings_string_split.len() != 4 {
@@ -59,6 +59,70 @@ fn generate_random_setting() -> (u128, i128, i128, i128) {
     );
 }
 
+fn get_setting_encryption() -> (bool, u128, i128, i128, i128) {
+    loop {
+        let mut string_input: String = String::new();
+        println!("insert settings, type 'r' for random settings:");
+        stdin()
+            .read_line(&mut string_input)
+            .expect("input read fail");
+
+        if string_input == String::from("r") {
+            let generated_random_setting: (u128, i128, i128, i128) = generate_random_setting();
+            let return_var: (bool, u128, i128, i128, i128) = (
+                true,
+                generated_random_setting.0,
+                generated_random_setting.1,
+                generated_random_setting.2,
+                generated_random_setting.3,
+            );
+            println!("{:?}", return_var);
+            return return_var;
+        } else {
+            let user_input_setting: (bool, u128, i128, i128, i128) =
+                break_settings_string_to_tuple(string_input);
+            if user_input_setting.0 == true {
+                return user_input_setting;
+            }
+        }
+    }
+}
+
+fn get_setting_decryption() -> (bool, u128, i128, i128, i128) {
+    loop {
+        let mut string_input: String = String::new();
+        println!("insert settings:");
+        stdin()
+            .read_line(&mut string_input)
+            .expect("input read fail");
+
+        let user_input_setting: (bool, u128, i128, i128, i128) =
+            break_settings_string_to_tuple(string_input);
+
+        if user_input_setting.0 == true {
+            return user_input_setting;
+        }
+    }
+}
+
+fn get_direction() -> String {
+    loop {
+        println!("encrypt (e), decrypt (d)");
+
+        let mut string_input: String = String::new();
+
+        stdin()
+            .read_line(&mut string_input)
+            .expect("input read fail");
+
+        if string_input == "e" || string_input == "d" {
+            return string_input;
+        } else {
+            print!("invalid input");
+        }
+    }
+}
+
 fn calculate_character_randomise(settings: (bool, u128, i128, i128, i128)) {}
 
 fn main() {
@@ -67,60 +131,13 @@ fn main() {
     // main loop
     let mut run: bool = true;
     while run {
-        let mut string_input: String = String::new();
-        // encrypt or decrypt loop
-        loop {
-            println!("encrypt (e), decrypt (d):");
-            stdin()
-                .read_line(&mut string_input)
-                .expect("input read fail");
-
-            let string_input_slice: &str = string_input.trim();
-
-            if string_input_slice == "e" || string_input_slice == "d" {
-                break;
-            }
-            string_input = "".to_string();
-            println!("invalid input");
-        }
-
-        let direction: &str = string_input.trim();
+        let direction: String = get_direction();
 
         // if to encrypt
-        if direction == "e" {
-            let mut settings: (bool, u128, i128, i128, i128);
-            // get settings loop
-            loop {
-                let mut string_input: String = String::new();
-                println!("insert settings, type 'r' for random settings:");
-                stdin()
-                    .read_line(&mut string_input)
-                    .expect("input read fail");
-
-                let string_input_slice: &str = string_input.trim();
-
-                if string_input_slice == "r" {
-                    let generated_random_setting: (u128, i128, i128, i128) =
-                        generate_random_setting();
-                    settings = (
-                        true,
-                        generated_random_setting.0,
-                        generated_random_setting.1,
-                        generated_random_setting.2,
-                        generated_random_setting.3,
-                    );
-                    println!("{:?}", generated_random_setting);
-                    break;
-                } else {
-                    let user_input_setting: (bool, u128, i128, i128, i128) =
-                        break_settings_string_to_tuple(&string_input_slice);
-                    if user_input_setting.0 == true {
-                        settings = user_input_setting;
-                        break;
-                    }
-                }
-            }
+        if direction == String::from("e") {
+            let settings: (bool, u128, i128, i128, i128) = get_setting_encryption();
         } else {
+            let settings: (bool, u128, i128, i128, i128) = get_setting_decryption();
         }
 
         run = get_rerun_or_close()
